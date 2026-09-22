@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { createClient } = require('@supabase/supabase-js');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -10,7 +11,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -314,6 +315,11 @@ app.get('/api/sorteios', async (req, res) => {
 // Health check
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', supabase: supabase ? 'conectado' : 'desconectado' });
+});
+
+// Serve index.html para qualquer rota não tratada (SPA)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
