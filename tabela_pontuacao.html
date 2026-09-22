@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BasketScore Pro - Sistema de Gerenciamento de Time</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #3b82f6;
+            --accent-dark: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --card-bg: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        nav button:hover {
+            background: var(--secondary);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+
+        nav button.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Main Container */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        /* Section */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            color: var(--success);
+        }
+
+        /* Table Container */
+        .table-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        th {
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 16px 20px;
+            font-size: 0.9375rem;
+        }
+
+        .player-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1e293b; }
+        .rank-2 { background: linear-gradient(135deg, #94a3b8, #64748b); color: #1e293b; }
+        .rank-3 { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; }
+        .rank-other { background: var(--secondary); color: var(--text-secondary); }
+
+        .points-value {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.125rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-weight: 500;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-dark);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-large {
+            padding: 12px 24px;
+            font-size: 0.9375rem;
+        }
+
+        /* Team Generator */
+        .generator-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .generator-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .generator-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .generator-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 0.9375rem;
+        }
+
+        .team-display {
+            margin-top: 24px;
+            display: none;
+        }
+
+        .team-display.active {
+            display: block;
+        }
+
+        .team-group {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .team-label {
+            font-size: 0.875rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .team-players {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .player-tag {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .team-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .team-stat {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        .team-stat span {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .modal-content {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        /* Info Banner */
+        .info-banner {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .info-banner p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+
+        .info-banner strong {
+            color: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .generator-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 16px 20px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            nav {
+                width: 100%;
+                overflow-x: auto;
+            }
+
+            nav button {
+                white-space: nowrap;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: 12px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">Basket<span>Score</span> Pro</div>
+            <nav>
+                <button class="active" onclick="showSection('ranking')">Ranking</button>
+                <button onclick="showSection('sorteio')">Sorteio de Times</button>
+                <button onclick="showSection('historico')">Histórico Semanal</button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Ranking Section -->
+        <section id="ranking" class="section active">
+            <div class="section-header">
+                <h1 class="section-title">Ranking de Jogadores</h1>
+                <p class="section-subtitle">Pontuação atualizada em tempo real baseada em vitórias e cestas</p>
+            </div>
+
+            <div class="info-banner">
+                <p><strong>Sistema de Pontuação:</strong> Vitória = 10 pontos | Ponto = 1 ponto</p>
+            </div>
+
+            <div class="cards-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Líder da Semana</div>
+                    <div class="stat-value" id="liderSemana">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total de Vitórias</div>
+                    <div class="stat-value" id="totalVitorias">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total de Pontos</div>
+                    <div class="stat-value" id="totalCestas">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Média por Jogador</div>
+                    <div class="stat-value" id="mediaJogador">0</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h2 class="table-title">Classificação</h2>
+                    <div class="table-actions">
+                        <button class="btn btn-secondary" onclick="exportarDados()">Exportar CSV</button>
+                        <button class="btn btn-danger" onclick="confirmarReset()">Limpar Dados</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Posição</th>
+                            <th>Jogador</th>
+                            <th>Vitórias</th>
+                            <th>Pontos</th>
+                            <th>Total</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaJogadores">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Sorteio Section -->
+        <section id="sorteio" class="section">
+            <div class="section-header">
+                <h1 class="section-title">Sorteio de Times</h1>
+                <p class="section-subtitle">Gere times balanceados automaticamente para suas partidas. Os times são organizados para equilibrar vitórias e pontos.</p>
+            </div>
+
+            <div class="generator-container">
+                <div class="generator-card">
+                    <h2 class="generator-title">Time 3v3</h2>
+                    <p class="generator-subtitle">Gere dois times de 3 jogadores para partidas rápidas</p>
+                    
+                    <button class="btn btn-primary btn-large" onclick="sortearTimes3v3()">Sortear Times</button>
+                    
+                    <div id="resultado3v3" class="team-display">
+                        <div class="team-group">
+                            <div class="team-label">Time A</div>
+                            <div class="team-players" id="timeA3v3"></div>
+                            <div class="team-stats">
+                                <div class="team-stat">Vitórias: <span id="vitoriasA3v3">0</span></div>
+                                <div class="team-stat">Pontos: <span id="cestasA3v3">0</span></div>
+                            </div>
+                        </div>
+                        <div class="team-group">
+                            <div class="team-label">Time B</div>
+                            <div class="team-players" id="timeB3v3"></div>
+                            <div class="team-stats">
+                                <div class="team-stat">Vitórias: <span id="vitoriasB3v3">0</span></div>
+                                <div class="team-stat">Pontos: <span id="cestasB3v3">0</span></div>
+                            </div>
+                        </div>
+                        <div class="team-group">
+                            <div class="team-label">Reserva</div>
+                            <div class="team-players" id="reserva3v3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generator-card">
+                    <h2 class="generator-title">Duplas 2v2</h2>
+                    <p class="generator-subtitle">Gere quatro duplas para partidas menores</p>
+                    
+                    <button class="btn btn-primary btn-large" onclick="sortearTimes2v2()">Sortear Duplas</button>
+                    
+                    <div id="resultado2v2" class="team-display">
+                        <div class="team-group">
+                            <div class="team-label">Dupla 1</div>
+                            <div class="team-players" id="duplaA2v2"></div>
+                            <div class="team-stats">
+                                <div class="team-stat">Vitórias: <span id="vitoriasA2v2">0</span></div>
+                                <div class="team-stat">Pontos: <span id="cestasA2v2">0</span></div>
+                            </div>
+                        </div>
+                        <div class="team-group">
+                            <div class="team-label">Dupla 2</div>
+                            <div class="team-players" id="duplaB2v2"></div>
+                            <div class="team-stats">
+                                <div class="team-stat">Vitórias: <span id="vitoriasB2v2">0</span></div>
+                                <div class="team-stat">Pontos: <span id="cestasB2v2">0</span></div>
+                            </div>
+                        </div>
+                        <div class="team-group">
+                            <div class="team-label">Dupla 3</div>
+                            <div class="team-players" id="duplaC2v2"></div>
+                            <div class="team-stats">
+                                <div class="team-stat">Vitórias: <span id="vitoriasC2v2">0</span></div>
+                                <div class="team-stat">Pontos: <span id="cestasC2v2">0</span></div>
+                            </div>
+                        </div>
+                        <div class="team-group">
+                            <div class="team-label">Dupla 4</div>
+                            <div class="team-players" id="duplaD2v2"></div>
+                            <div class="team-stats">
+                                <div class="team-stat">Vitórias: <span id="vitoriasD2v2">0</span></div>
+                                <div class="team-stat">Pontos: <span id="cestasD2v2">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Histórico Section -->
+        <section id="historico" class="section">
+            <div class="section-header">
+                <h1 class="section-title">Histórico Semanal</h1>
+                <p class="section-subtitle">Acompanhe os times sorteados e resultados de cada semana</p>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h2 class="table-title">Registros da Temporada</h2>
+                    <button class="btn btn-primary" onclick="salvarSorteioAtual()">Salvar Sorteio Atual</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Semana</th>
+                            <th>Tipo</th>
+                            <th>Time 1</th>
+                            <th>Time 2</th>
+                            <th>Time 3 / Reservas</th>
+                            <th>Time 4 / Reservas</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaHistorico">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Reset -->
+    <div class="modal-overlay" id="modalReset">
+        <div class="modal">
+            <h3 class="modal-title">Confirmar Ação</h3>
+            <p class="modal-content">Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+                <button class="btn btn-danger" onclick="resetarTabela()">Limpar Dados</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração dos jogadores
+        const jogadores = [
+            'Enzo',
+            'Mateus',
+            'Thiago',
+            'Lucas',
+            'Miguel',
+            'Lorenzo',
+            'Gabriel',
+            'Vinicius'
+        ];
+
+        // Estado atual do sorteio
+        let sorteioAtual = null;
+
+        // Inicialização
+        function inicializarDados() {
+            if (!localStorage.getItem('pontuacao')) {
+                const dadosIniciais = jogadores.map(nome => ({
+                    nome: nome,
+                    vitorias: 0,
+                    cestas: 0
+                }));
+                localStorage.setItem('pontuacao', JSON.stringify(dadosIniciais));
+            }
+            if (!localStorage.getItem('historico')) {
+                localStorage.setItem('historico', JSON.stringify([]));
+            }
+        }
+
+        function obterDados() {
+            return JSON.parse(localStorage.getItem('pontuacao'));
+        }
+
+        function salvarDados(dados) {
+            localStorage.setItem('pontuacao', JSON.stringify(dados));
+            atualizarTabela();
+        }
+
+        function obterHistorico() {
+            return JSON.parse(localStorage.getItem('historico'));
+        }
+
+        function salvarHistorico(historico) {
+            localStorage.setItem('historico', JSON.stringify(historico));
+        }
+
+        // Navegação
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+
+            if (sectionId === 'historico') {
+                atualizarHistorico();
+            }
+        }
+
+        // Cálculos
+        function calcularPontos(vitorias, pontos) {
+            return (vitorias * 10) + pontos;
+        }
+
+        // Ações de pontuação
+        function adicionarVitoria(indice) {
+            const dados = obterDados();
+            dados[indice].vitorias += 1;
+            salvarDados(dados);
+        }
+
+        function removerVitoria(indice) {
+            const dados = obterDados();
+            if (dados[indice].vitorias > 0) {
+                dados[indice].vitorias -= 1;
+                salvarDados(dados);
+            }
+        }
+
+        function adicionarCesta(indice) {
+            const dados = obterDados();
+            dados[indice].cestas += 1;
+            salvarDados(dados);
+        }
+
+        function removerCesta(indice) {
+            const dados = obterDados();
+            if (dados[indice].cestas > 0) {
+                dados[indice].cestas -= 1;
+                salvarDados(dados);
+            }
+        }
+
+        // Reset
+        function confirmarReset() {
+            document.getElementById('modalReset').classList.add('active');
+        }
+
+        function fecharModal() {
+            document.getElementById('modalReset').classList.remove('active');
+        }
+
+        function resetarTabela() {
+            localStorage.removeItem('pontuacao');
+            localStorage.removeItem('historico');
+            inicializarDados();
+            atualizarTabela();
+            atualizarHistorico();
+            fecharModal();
+        }
+
+        // Exportação
+        function exportarDados() {
+            const dados = obterDados();
+            const dadosOrdenados = [...dados].sort((a, b) => 
+                calcularPontos(b.vitorias, b.cestas) - calcularPontos(a.vitorias, a.cestas)
+            );
+
+            let csv = 'Posição,Jogador,Vitórias,Pontos,Total\n';
+            dadosOrdenados.forEach((jogador, index) => {
+                const pontos = calcularPontos(jogador.vitorias, jogador.cestas);
+                csv += `${index + 1},"${jogador.nome}",${jogador.vitorias},${jogador.cestas},${pontos}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ranking_basquete_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        // Atualização da tabela
+        function atualizarTabela() {
+            const dados = obterDados();
+            const dadosOrdenados = [...dados].map((d, idx) => ({ ...d, indiceOriginal: idx }))
+                .sort((a, b) => calcularPontos(b.vitorias, b.cestas) - calcularPontos(a.vitorias, a.cestas));
+
+            const tbody = document.getElementById('tabelaJogadores');
+            tbody.innerHTML = '';
+
+            dadosOrdenados.forEach((jogador, posicao) => {
+                const pontos = calcularPontos(jogador.vitorias, jogador.cestas);
+                const rankClass = posicao === 0 ? 'rank-1' : posicao === 1 ? 'rank-2' : posicao === 2 ? 'rank-3' : 'rank-other';
+                const inicial = jogador.nome.split(' ').map(n => n[0]).join('').substring(0, 2);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span class="rank-badge ${rankClass}">${posicao + 1}</span></td>
+                    <td>
+                        <div class="player-name">
+                            <div class="player-avatar">${inicial}</div>
+                            <span>${jogador.nome}</span>
+                        </div>
+                    </td>
+                    <td>${jogador.vitorias}</td>
+                    <td>${jogador.cestas}</td>
+                    <td><span class="points-value">${pontos}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-success" onclick="adicionarVitoria(${jogador.indiceOriginal})">+Vitória</button>
+                            <button class="btn btn-secondary" onclick="removerVitoria(${jogador.indiceOriginal})">-Vitória</button>
+                            <button class="btn btn-primary" onclick="adicionarCesta(${jogador.indiceOriginal})">+Ponto</button>
+                            <button class="btn btn-secondary" onclick="removerCesta(${jogador.indiceOriginal})">-Ponto</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            atualizarEstatisticas(dados);
+        }
+
+        function atualizarEstatisticas(dados) {
+            const pontuacoes = dados.map(d => calcularPontos(d.vitorias, d.cestas));
+            const maiorPontuacao = Math.max(...pontuacoes);
+            const liderIdx = pontuacoes.indexOf(maiorPontuacao);
+            
+            document.getElementById('liderSemana').textContent = dados[liderIdx].nome;
+            document.getElementById('totalVitorias').textContent = dados.reduce((sum, d) => sum + d.vitorias, 0);
+            document.getElementById('totalCestas').textContent = dados.reduce((sum, d) => sum + d.cestas, 0);
+            document.getElementById('mediaJogador').textContent = (pontuacoes.reduce((a, b) => a + b, 0) / dados.length).toFixed(1);
+        }
+
+        // Sorteio de times
+        function sortearTimes3v3() {
+            const dados = obterDados();
+            const jogadoresEmbaralhados = [...dados].sort(() => Math.random() - 0.5);
+            
+            const timeA = jogadoresEmbaralhados.slice(0, 3);
+            const timeB = jogadoresEmbaralhados.slice(3, 6);
+            const reserva = jogadoresEmbaralhados.slice(6, 8);
+
+            sorteioAtual = { tipo: '3v3', timeA, timeB, reserva };
+
+            exibirTime(timeA, 'timeA3v3', 'vitoriasA3v3', 'cestasA3v3');
+            exibirTime(timeB, 'timeB3v3', 'vitoriasB3v3', 'cestasB3v3');
+            exibirReserva(reserva, 'reserva3v3');
+
+            document.getElementById('resultado3v3').classList.add('active');
+        }
+
+        function sortearTimes2v2() {
+            const dados = obterDados();
+            const jogadoresEmbaralhados = [...dados].sort(() => Math.random() - 0.5);
+            
+            const dupla1 = jogadoresEmbaralhados.slice(0, 2);
+            const dupla2 = jogadoresEmbaralhados.slice(2, 4);
+            const dupla3 = jogadoresEmbaralhados.slice(4, 6);
+            const dupla4 = jogadoresEmbaralhados.slice(6, 8);
+
+            sorteioAtual = { 
+                tipo: '2v2', 
+                timeA: dupla1, 
+                timeB: dupla2, 
+                timeC: dupla3, 
+                timeD: dupla4,
+                reserva: [] 
+            };
+
+            exibirTime(dupla1, 'duplaA2v2', 'vitoriasA2v2', 'cestasA2v2');
+            exibirTime(dupla2, 'duplaB2v2', 'vitoriasB2v2', 'cestasB2v2');
+            exibirTime(dupla3, 'duplaC2v2', 'vitoriasC2v2', 'cestasC2v2');
+            exibirTime(dupla4, 'duplaD2v2', 'vitoriasD2v2', 'cestasD2v2');
+
+            document.getElementById('resultado2v2').classList.add('active');
+        }
+
+        function exibirTime(jogadores, containerId, vitoriasId, cestasId) {
+            const container = document.getElementById(containerId);
+            const totalVitorias = jogadores.reduce((sum, j) => sum + j.vitorias, 0);
+            const totalCestas = jogadores.reduce((sum, j) => sum + j.cestas, 0);
+
+            container.innerHTML = jogadores.map(j => `<div class="player-tag">${j.nome}</div>`).join('');
+            document.getElementById(vitoriasId).textContent = totalVitorias;
+            document.getElementById(cestasId).textContent = totalCestas;
+        }
+
+        function exibirReserva(jogadores, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = jogadores.map(j => `<div class="player-tag">${j.nome}</div>`).join('');
+        }
+
+        // Histórico
+        function salvarSorteioAtual() {
+            if (!sorteioAtual) {
+                alert('Nenhum sorteio realizado ainda.');
+                return;
+            }
+
+            const historico = obterHistorico();
+            const semana = historico.length + 1;
+
+            if (sorteioAtual.tipo === '3v3') {
+                historico.push({
+                    semana,
+                    tipo: sorteioAtual.tipo,
+                    timeA: sorteioAtual.timeA.map(j => j.nome),
+                    timeB: sorteioAtual.timeB.map(j => j.nome),
+                    reserva: sorteioAtual.reserva.map(j => j.nome),
+                    data: new Date().toLocaleDateString('pt-BR')
+                });
+            } else if (sorteioAtual.tipo === '2v2') {
+                historico.push({
+                    semana,
+                    tipo: sorteioAtual.tipo,
+                    timeA: sorteioAtual.timeA.map(j => j.nome),
+                    timeB: sorteioAtual.timeB.map(j => j.nome),
+                    timeC: sorteioAtual.timeC.map(j => j.nome),
+                    timeD: sorteioAtual.timeD.map(j => j.nome),
+                    reserva: [],
+                    data: new Date().toLocaleDateString('pt-BR')
+                });
+            }
+
+            salvarHistorico(historico);
+            atualizarHistorico();
+        }
+
+        function atualizarHistorico() {
+            const historico = obterHistorico();
+            const tbody = document.getElementById('tabelaHistorico');
+            tbody.innerHTML = '';
+
+            if (historico.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-secondary);">Nenhum registro ainda</td></tr>';
+                return;
+            }
+
+            historico.reverse().forEach(registro => {
+                const row = document.createElement('tr');
+                
+                if (registro.tipo === '3v3') {
+                    row.innerHTML = `
+                        <td>${registro.semana}</td>
+                        <td>${registro.tipo}</td>
+                        <td>${registro.timeA.join(', ')}</td>
+                        <td>${registro.timeB.join(', ')}</td>
+                        <td>${registro.reserva.join(', ')}</td>
+                        <td>-</td>
+                        <td>${registro.data}</td>
+                    `;
+                } else if (registro.tipo === '2v2') {
+                    row.innerHTML = `
+                        <td>${registro.semana}</td>
+                        <td>${registro.tipo}</td>
+                        <td>${registro.timeA.join(', ')}</td>
+                        <td>${registro.timeB.join(', ')}</td>
+                        <td>${registro.timeC ? registro.timeC.join(', ') : '-'}</td>
+                        <td>${registro.timeD ? registro.timeD.join(', ') : '-'}</td>
+                        <td>${registro.data}</td>
+                    `;
+                }
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Inicialização ao carregar
+        window.addEventListener('load', () => {
+            inicializarDados();
+            atualizarTabela();
+            atualizarHistorico();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BasketScore Pro - Sistema de Gerenciamento de Time</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #3b82f6;
+            --accent-dark: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --card-bg: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        nav button:hover {
+            background: var(--secondary);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+
+        nav button.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .table-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .table-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        th {
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 16px 20px;
+            font-size: 0.9375rem;
+        }
+
+        .player-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1e293b; }
+        .rank-2 { background: linear-gradient(135deg, #94a3b8, #64748b); color: #1e293b; }
+        .rank-3 { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; }
+        .rank-other { background: var(--secondary); color: var(--text-secondary); }
+
+        .points-value {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.125rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-weight: 500;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-dark);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-large {
+            padding: 12px 24px;
+            font-size: 0.9375rem;
+            width: 100%;
+        }
+
+        .info-banner {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .info-banner p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+
+        .info-banner strong {
+            color: var(--accent);
+        }
+
+        .generator-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .generator-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .generator-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .generator-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 0.9375rem;
+        }
+
+        .team-display {
+            margin-top: 24px;
+            display: none;
+        }
+
+        .team-display.active {
+            display: block;
+        }
+
+        .team-group {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .team-label {
+            font-size: 0.875rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .team-players {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .player-tag {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .team-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .team-stat {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        .team-stat span {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .modal-content {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 1024px) {
+            .generator-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 16px 20px;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            nav {
+                width: 100%;
+                overflow-x: auto;
+            }
+
+            nav button {
+                white-space: nowrap;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: 12px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">Basket<span>Score</span> Pro</div>
+            <nav id="navMenu">
+                <button class="active" onclick="showSection('ranking')">Ranking</button>
+                <button onclick="showSection('sorteio')">Sorteio de Times</button>
+                <button onclick="showSection('historico')">Histórico</button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Ranking Section -->
+        <section id="ranking" class="section active">
+            <div class="section-header">
+                <h1 class="section-title">Ranking de Jogadores</h1>
+                <p class="section-subtitle">Pontuação atualizada em tempo real baseada em vitórias e pontos</p>
+            </div>
+
+            <div class="info-banner">
+                <p><strong>Sistema de Pontuação:</strong> Vitória = 10 pontos | Ponto = 1 ponto</p>
+            </div>
+
+            <div class="cards-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Líder da Semana</div>
+                    <div class="stat-value" id="liderSemana">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total de Vitórias</div>
+                    <div class="stat-value" id="totalVitorias">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total de Pontos</div>
+                    <div class="stat-value" id="totalPontos">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Média por Jogador</div>
+                    <div class="stat-value" id="mediaJogador">0</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h2 class="table-title">Classificação</h2>
+                    <div class="table-actions">
+                        <button class="btn btn-secondary" onclick="exportarDados()">Exportar CSV</button>
+                        <button class="btn btn-danger" onclick="confirmarReset()">Limpar Dados</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Posição</th>
+                            <th>Jogador</th>
+                            <th>Vitórias</th>
+                            <th>Pontos</th>
+                            <th>Total</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaJogadores">
+                        <tr><td colspan="6" class="loading">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Sorteio Section -->
+        <section id="sorteio" class="section">
+            <div class="section-header">
+                <h1 class="section-title">Sorteio de Times</h1>
+                <p class="section-subtitle">Gere times balanceados automaticamente para suas partidas</p>
+            </div>
+
+            <div class="generator-container">
+                <div class="generator-card">
+                    <h2 class="generator-title">Time 3v3</h2>
+                    <p class="generator-subtitle">Gere dois times de 3 jogadores para partidas rápidas</p>
+                    <button class="btn btn-primary btn-large" onclick="sortearTimes3v3()">Sortear Times</button>
+                    <div id="resultado3v3" class="team-display">
+                        <div class="team-group">
+                            <div class="team-label">Time A</div>
+                            <div class="team-players" id="timeA3v3"></div>
+                            <div class="team-stats">
+                                <div class="team-stat">Vitórias: <span id="vitoriasA3v3">0</span></div>
+                                <div class="team-stat">Pontos: <span id="cestasA3v3">0</span></div>
+                            </div>
+                        </div>
+                        <div class="team-group">
+                            <div class="team-label">Time B</div>
+                            <div class="team-players" id="timeB3v3"></div>
+                            <div class="team-stats">
+                                <div class="team-stat">Vitórias: <span id="vitoriasB3v3">0</span></div>
+                                <div class="team-stat">Pontos: <span id="cestasB3v3">0</span></div>
+                            </div>
+                        </div>
+                        <div class="team-group">
+                            <div class="team-label">Reserva</div>
+                            <div class="team-players" id="reserva3v3"></div>
+                        </div>
+                        <button class="btn btn-success" onclick="salvarSorteio('3v3')" style="width: 100%; margin-top: 16px;">Salvar Sorteio</button>
+                    </div>
+                </div>
+
+                <div class="generator-card">
+                    <h2 class="generator-title">Duplas 2v2</h2>
+                    <p class="generator-subtitle">Gere quatro duplas para partidas menores</p>
+                    <button class="btn btn-primary btn-large" onclick="sortearTimes2v2()">Sortear Duplas</button>
+                    <div id="resultado2v2" class="team-display">
+                        <div class="team-group">
+                            <div class="team-label">Dupla 1</div>
+                            <div class="team-players" id="duplaA2v2"></div>
+                            <div class="team-stats">
+                                <div class="team-stat">Vitórias: <span id="vitoriasA2v2">0</span></div>
+                                <div class="team-stat">Pontos: <span id="cestasA2v2">0</span></div>
+                            </div>
+                        </div>
+                        <div class="team-group">
+                            <div class="team-label">Dupla 2</div>
+                            <div class="team-players" id="duplaB2v2"></div>
+                            <div class="team-stats">
+                                <div class="team-stat">Vitórias: <span id="vitoriasB2v2">0</span></div>
+                                <div class="team-stat">Pontos: <span id="cestasB2v2">0</span></div>
+                            </div>
+                        </div>
+                        <div class="team-group">
+                            <div class="team-label">Dupla 3</div>
+                            <div class="team-players" id="duplaC2v2"></div>
+                            <div class="team-stats">
+                                <div class="team-stat">Vitórias: <span id="vitoriasC2v2">0</span></div>
+                                <div class="team-stat">Pontos: <span id="cestasC2v2">0</span></div>
+                            </div>
+                        </div>
+                        <div class="team-group">
+                            <div class="team-label">Dupla 4</div>
+                            <div class="team-players" id="duplaD2v2"></div>
+                            <div class="team-stats">
+                                <div class="team-stat">Vitórias: <span id="vitoriasD2v2">0</span></div>
+                                <div class="team-stat">Pontos: <span id="cestasD2v2">0</span></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-success" onclick="salvarSorteio('2v2')" style="width: 100%; margin-top: 16px;">Salvar Sorteio</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Histórico Section -->
+        <section id="historico" class="section">
+            <div class="section-header">
+                <h1 class="section-title">Histórico Semanal</h1>
+                <p class="section-subtitle">Acompanhe os times sorteados de cada semana</p>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h2 class="table-title">Registros da Temporada</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Semana</th>
+                            <th>Tipo</th>
+                            <th>Time 1</th>
+                            <th>Time 2</th>
+                            <th>Time 3 / Reservas</th>
+                            <th>Time 4</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaHistorico">
+                        <tr><td colspan="7" class="loading">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title" id="modalTitle"></h3>
+            <p class="modal-content" id="modalContent"></p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+                <button class="btn btn-danger" onclick="executarModalAction()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Jogadores
+        const nomes = ['Enzo', 'Mateus', 'Thiago', 'Lucas', 'Miguel', 'Lorenzo', 'Gabriel', 'Vinicius'];
+        let jogadores = [];
+        let sorteios = [];
+        let sorteioAtual = null;
+        const API_URL = '/api'; // Usa URL relativa para funcionar em qualquer host
+
+        // Função auxiliar para chamadas API
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            try {
+                const response = await fetch(`${API_URL}${endpoint}`, options);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.erro || 'Erro na requisição');
+                }
+
+                return data;
+            } catch (err) {
+                console.error('Erro:', err);
+                throw err;
+            }
+        }
+
+        // Inicialização
+        function inicializarDados() {
+            const dados = localStorage.getItem('basketscore_jogadores');
+            if (!dados) {
+                jogadores = nomes.map((nome, idx) => ({
+                    id: idx + 1,
+                    nome,
+                    vitorias: 0,
+                    pontos: 0
+                }));
+                salvarDados();
+            } else {
+                jogadores = JSON.parse(dados);
+            }
+
+            const historicoData = localStorage.getItem('basketscore_sorteios');
+            if (historicoData) {
+                sorteios = JSON.parse(historicoData);
+            }
+
+            // Tentar sincronizar com API
+            sincronizarComAPI();
+        }
+
+        async function sincronizarComAPI() {
+            try {
+                const novosDados = await apiCall('/jogadores');
+                if (novosDados && novosDados.length > 0) {
+                    jogadores = novosDados;
+                    salvarDados();
+                }
+
+                const novosSorteios = await apiCall('/sorteios');
+                if (novosSorteios && novosSorteios.length > 0) {
+                    sorteios = novosSorteios;
+                    salvarSorteios();
+                }
+                console.log('Sincronizado com API');
+            } catch (err) {
+                console.log('Usando dados locais (API não disponível)');
+            }
+        }
+
+        function salvarDados() {
+            localStorage.setItem('basketscore_jogadores', JSON.stringify(jogadores));
+        }
+
+        function salvarSorteios() {
+            localStorage.setItem('basketscore_sorteios', JSON.stringify(sorteios));
+        }
+
+        // Cálculos
+        function calcularPontos(jogador) {
+            return (jogador.vitorias * 10) + jogador.pontos;
+        }
+
+        // Atualização de tabela
+        function atualizarTabela() {
+            const dadosOrdenados = [...jogadores]
+                .sort((a, b) => calcularPontos(b) - calcularPontos(a));
+
+            const tbody = document.getElementById('tabelaJogadores');
+            tbody.innerHTML = '';
+
+            dadosOrdenados.forEach((jogador, posicao) => {
+                const pontos = calcularPontos(jogador);
+                const rankClass = posicao === 0 ? 'rank-1' : posicao === 1 ? 'rank-2' : posicao === 2 ? 'rank-3' : 'rank-other';
+                const inicial = jogador.nome.substring(0, 2).toUpperCase();
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span class="rank-badge ${rankClass}">${posicao + 1}</span></td>
+                    <td>
+                        <div class="player-name">
+                            <div class="player-avatar">${inicial}</div>
+                            <span>${jogador.nome}</span>
+                        </div>
+                    </td>
+                    <td>${jogador.vitorias}</td>
+                    <td>${jogador.pontos}</td>
+                    <td><span class="points-value">${pontos}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-success" onclick="adicionarVitoria(${jogador.id})">+Vitória</button>
+                            <button class="btn btn-secondary" onclick="removerVitoria(${jogador.id})">-Vitória</button>
+                            <button class="btn btn-primary" onclick="adicionarPonto(${jogador.id})">+Ponto</button>
+                            <button class="btn btn-secondary" onclick="removerPonto(${jogador.id})">-Ponto</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            atualizarEstatisticas();
+        }
+
+        function atualizarEstatisticas() {
+            const pontuacoes = jogadores.map(calcularPontos);
+            const maxPontos = Math.max(...pontuacoes, 0);
+            const liderIdx = pontuacoes.indexOf(maxPontos);
+
+            document.getElementById('liderSemana').textContent = liderIdx >= 0 ? jogadores[liderIdx].nome : '-';
+            document.getElementById('totalVitorias').textContent = jogadores.reduce((sum, j) => sum + j.vitorias, 0);
+            document.getElementById('totalPontos').textContent = jogadores.reduce((sum, j) => sum + j.pontos, 0);
+            document.getElementById('mediaJogador').textContent = (pontuacoes.reduce((a, b) => a + b, 0) / jogadores.length || 0).toFixed(1);
+        }
+
+        // Ações
+        async function adicionarVitoria(id) {
+            const jogador = jogadores.find(j => j.id === id);
+            if (jogador) {
+                try {
+                    const atualizado = await apiCall(`/jogadores/${id}/vitoria`, 'PUT', { acao: 'add' });
+                    Object.assign(jogador, atualizado);
+                } catch (err) {
+                    jogador.vitorias += 1;
+                }
+                salvarDados();
+                atualizarTabela();
+            }
+        }
+
+        async function removerVitoria(id) {
+            const jogador = jogadores.find(j => j.id === id);
+            if (jogador && jogador.vitorias > 0) {
+                try {
+                    const atualizado = await apiCall(`/jogadores/${id}/vitoria`, 'PUT', { acao: 'remove' });
+                    Object.assign(jogador, atualizado);
+                } catch (err) {
+                    jogador.vitorias -= 1;
+                }
+                salvarDados();
+                atualizarTabela();
+            }
+        }
+
+        async function adicionarPonto(id) {
+            const jogador = jogadores.find(j => j.id === id);
+            if (jogador) {
+                try {
+                    const atualizado = await apiCall(`/jogadores/${id}/ponto`, 'PUT', { acao: 'add' });
+                    Object.assign(jogador, atualizado);
+                } catch (err) {
+                    jogador.pontos += 1;
+                }
+                salvarDados();
+                atualizarTabela();
+            }
+        }
+
+        async function removerPonto(id) {
+            const jogador = jogadores.find(j => j.id === id);
+            if (jogador && jogador.pontos > 0) {
+                try {
+                    const atualizado = await apiCall(`/jogadores/${id}/ponto`, 'PUT', { acao: 'remove' });
+                    Object.assign(jogador, atualizado);
+                } catch (err) {
+                    jogador.pontos -= 1;
+                }
+                salvarDados();
+                atualizarTabela();
+            }
+        }
+
+        // Navegação
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+
+            if (sectionId === 'historico') {
+                atualizarHistorico();
+            }
+        }
+
+        // Sorteio 3v3
+        function sortearTimes3v3() {
+            const embaralhados = [...jogadores].sort(() => Math.random() - 0.5);
+            const timeA = embaralhados.slice(0, 3);
+            const timeB = embaralhados.slice(3, 6);
+            const reserva = embaralhados.slice(6, 8);
+
+            sorteioAtual = { tipo: '3v3', timeA, timeB, timeC: [], timeD: [], reserva };
+            
+            exibirTime(timeA, 'timeA3v3', 'vitoriasA3v3', 'cestasA3v3');
+            exibirTime(timeB, 'timeB3v3', 'vitoriasB3v3', 'cestasB3v3');
+            exibirReserva(reserva, 'reserva3v3');
+            
+            document.getElementById('resultado3v3').classList.add('active');
+        }
+
+        // Sorteio 2v2
+        function sortearTimes2v2() {
+            const embaralhados = [...jogadores].sort(() => Math.random() - 0.5);
+            const dupla1 = embaralhados.slice(0, 2);
+            const dupla2 = embaralhados.slice(2, 4);
+            const dupla3 = embaralhados.slice(4, 6);
+            const dupla4 = embaralhados.slice(6, 8);
+
+            sorteioAtual = { tipo: '2v2', timeA: dupla1, timeB: dupla2, timeC: dupla3, timeD: dupla4, reserva: [] };
+
+            exibirTime(dupla1, 'duplaA2v2', 'vitoriasA2v2', 'cestasA2v2');
+            exibirTime(dupla2, 'duplaB2v2', 'vitoriasB2v2', 'cestasB2v2');
+            exibirTime(dupla3, 'duplaC2v2', 'vitoriasC2v2', 'cestasC2v2');
+            exibirTime(dupla4, 'duplaD2v2', 'vitoriasD2v2', 'cestasD2v2');
+
+            document.getElementById('resultado2v2').classList.add('active');
+        }
+
+        function exibirTime(time, containerId, vitoriasId, pontosId) {
+            const container = document.getElementById(containerId);
+            const totalVitorias = time.reduce((sum, j) => sum + j.vitorias, 0);
+            const totalPontos = time.reduce((sum, j) => sum + j.pontos, 0);
+
+            container.innerHTML = time.map(j => `<div class="player-tag">${j.nome}</div>`).join('');
+            document.getElementById(vitoriasId).textContent = totalVitorias;
+            document.getElementById(pontosId).textContent = totalPontos;
+        }
+
+        function exibirReserva(time, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = time.map(j => `<div class="player-tag">${j.nome}</div>`).join('');
+        }
+
+        function salvarSorteio(tipo) {
+            if (!sorteioAtual) return;
+
+            const semana = sorteios.length > 0 
+                ? Math.max(...sorteios.map(s => s.semana)) + 1 
+                : 1;
+
+            const novoSorteio = {
+                semana,
+                tipo,
+                timeA: sorteioAtual.timeA.map(j => j.nome),
+                timeB: sorteioAtual.timeB.map(j => j.nome),
+                timeC: sorteioAtual.timeC ? sorteioAtual.timeC.map(j => j.nome) : [],
+                timeD: sorteioAtual.timeD ? sorteioAtual.timeD.map(j => j.nome) : [],
+                reserva: sorteioAtual.reserva ? sorteioAtual.reserva.map(j => j.nome) : [],
+                data: new Date().toLocaleDateString('pt-BR')
+            };
+
+            // Tentar salvar na API
+            apiCall('/sorteios', 'POST', sorteioAtual)
+                .then(resultado => {
+                    console.log('Sorteio salvo na API');
+                    sorteios.push(resultado);
+                })
+                .catch(err => {
+                    console.log('Salvando sorteio localmente');
+                    sorteios.push(novoSorteio);
+                })
+                .finally(() => {
+                    salvarSorteios();
+                    alert('Sorteio salvo com sucesso!');
+                    document.getElementById(`resultado${tipo === '3v3' ? '3v3' : '2v2'}`).classList.remove('active');
+                });
+        }
+
+        // Histórico
+        function atualizarHistorico() {
+            const tbody = document.getElementById('tabelaHistorico');
+            tbody.innerHTML = '';
+
+            if (sorteios.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="loading">Nenhum registro</td></tr>';
+                return;
+            }
+
+            sorteios.forEach(registro => {
+                const row = document.createElement('tr');
+                if (registro.tipo === '3v3') {
+                    row.innerHTML = `
+                        <td>${registro.semana}</td>
+                        <td>${registro.tipo}</td>
+                        <td>${registro.timeA.join(', ')}</td>
+                        <td>${registro.timeB.join(', ')}</td>
+                        <td>${registro.reserva.join(', ')}</td>
+                        <td>-</td>
+                        <td>${registro.data}</td>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <td>${registro.semana}</td>
+                        <td>${registro.tipo}</td>
+                        <td>${registro.timeA.join(', ')}</td>
+                        <td>${registro.timeB.join(', ')}</td>
+                        <td>${registro.timeC.join(', ')}</td>
+                        <td>${registro.timeD.join(', ')}</td>
+                        <td>${registro.data}</td>
+                    `;
+                }
+                tbody.appendChild(row);
+            });
+        }
+
+        // Reset
+        function confirmarReset() {
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('modalTitle').textContent = 'Confirmar Ação';
+            document.getElementById('modalContent').textContent = 'Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.';
+        }
+
+        function fecharModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        async function executarModalAction() {
+            try {
+                await apiCall('/jogadores/reset', 'POST');
+            } catch (err) {
+                console.log('Reset local');
+            }
+
+            jogadores.forEach(j => {
+                j.vitorias = 0;
+                j.pontos = 0;
+            });
+            sorteios = [];
+            salvarDados();
+            salvarSorteios();
+            atualizarTabela();
+            atualizarHistorico();
+            fecharModal();
+            alert('Dados resetados com sucesso!');
+        }
+
+        // Exportar
+        function exportarDados() {
+            const dadosOrdenados = [...jogadores]
+                .sort((a, b) => calcularPontos(b) - calcularPontos(a));
+
+            let csv = 'Posição,Jogador,Vitórias,Pontos,Total\n';
+            dadosOrdenados.forEach((jogador, index) => {
+                const pontos = calcularPontos(jogador);
+                csv += `${index + 1},"${jogador.nome}",${jogador.vitorias},${jogador.pontos},${pontos}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ranking_basquete_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            inicializarDados();
+            atualizarTabela();
+        });
+    </script>
+</body>
+</html>
